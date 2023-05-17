@@ -15,7 +15,8 @@ class ContactsController extends Controller
      */
     public function index()
     {
-        //
+        $contacts = Contacts::get();
+        return $contacts;
     }
 
     /**
@@ -36,7 +37,16 @@ class ContactsController extends Controller
      */
     public function store(StoreContactsRequest $request)
     {
-        //
+        try {
+            Contacts::create([
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+                'phone_number' => $request->input('phone_number'),
+            ]);
+            return response()->json(['response' => 'Success'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['response' => $th->getMessage()], 500);
+        }
     }
 
     /**
@@ -68,9 +78,19 @@ class ContactsController extends Controller
      * @param  \App\Models\Contacts  $contacts
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateContactsRequest $request, Contacts $contacts)
+    public function update(UpdateContactsRequest $request, Contacts $contacts, $id)
     {
-        //
+        try {
+            $contacts = Contacts::findOrFail($id);
+            $contacts->update([
+                'first_name' => $request->input('first_name'),
+                'last_name' => $request->input('last_name'),
+                'phone_number' => $request->input('phone_number'),
+            ]);
+            return response()->json(['response' => 'Success'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['response' => $th->getMessage()], 500);
+        }
     }
 
     /**
@@ -79,8 +99,25 @@ class ContactsController extends Controller
      * @param  \App\Models\Contacts  $contacts
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Contacts $contacts)
+    public function destroy($id, Contacts $contacts)
     {
-        //
+        try {
+            $contact = Contacts::findOrFail($id);
+            $contact->delete();
+            return response()->json(['response' => 'Success'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['response' => $th->getMessage()], 500);
+        }
+    }
+
+    public function delete(Contacts $contacts)
+    {
+        try {
+            $contact = Contacts::onlyTrashed()->findOrFail($contacts);
+            $contact->forceDelete();
+            return response()->json(['response' => 'Success'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['response' => $th->getMessage()], 500);
+        }
     }
 }

@@ -13,7 +13,7 @@ class UpdateContactsRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,9 @@ class UpdateContactsRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'phone_number' => 'required|string|max:12'
         ];
     }
 }
